@@ -6,6 +6,10 @@ router.get('/allreview', (req, res) => {
     movieController.getAll(req, res);
 });
 
+router.get('/get-review', (req, res) => {
+    movieController.getReviewByMovie(req, res);
+});
+
 router.post('/addReview', (req, res) => {
     movieController.addReview(req, res);
 });

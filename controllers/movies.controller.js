@@ -26,12 +26,37 @@ controller.getAll = async (req, res) => {
     }
 }
 
+controller.getReviewByMovie = async (req, res) => {
+    try {
+        const result = await Movie.getSpecificMovie(req.query.movie_id);
+        logger.info('processing get review by movie_id '+ req.query.movie_id);
+        if(result == null){
+            const newMovie = Movie({
+                movie_id:req.query.movie_id,
+                all_rating: [
+                ]
+            });
+            logger.info('Adding new movie with review...');
+            const savedMovie = await Movie.addMovie(newMovie);
+            res.send([]);
+
+        }else{
+            res.send(result.all_rating);
+        }
+    }
+    catch(err) {
+        logger.error('Error in getting review- ' + err);
+        res.send('Got error in getAll');
+    }
+}
+
 controller.addReview = async (req, res) => {
     const existedMovie = await Movie.getSpecificMovie(req.body.movie_id);
     if(existedMovie != null && existedMovie != {}){
         const isExistedUser = existedMovie.all_rating.some(review => review.user_id == req.body.user_id)
         if(isExistedUser){
             logger.info('Existed user_id '+req.body.user_id+' in movie id ' + req.body.movie_id);
+            
             res.send({
                 isExisted: 1,
                 successful: 0
@@ -44,10 +69,11 @@ controller.addReview = async (req, res) => {
                 rating: req.body.rating,
                 comment: req.body.comment
               },)
+            const check = await Movie.getSpecificMovie(req.body.movie_id);
             res.send({
-                isExisted: 1,
-                successful: 0,
-                result:result
+                isExisted: 0,
+                successful: 1,
+                result:check.all_rating
             });
         }
     }else{
@@ -64,7 +90,12 @@ controller.addReview = async (req, res) => {
         });
         logger.info('Adding new movie with review...');
         const savedMovie = await Movie.addMovie(newMovie);
-        res.send('added: ' + savedMovie)
+        const check = await Movie.getSpecificMovie(req.body.movie_id);
+        res.send({
+            isExisted: 0,
+            successful: 1,
+            result:check.all_rating
+        })
     }
 }
 
