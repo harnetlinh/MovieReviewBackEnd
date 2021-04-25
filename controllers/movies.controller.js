@@ -6,7 +6,7 @@ const controller = {};
 function getAll_review_of_specific_user(all_reviews,id){
     let result = [];
     all_reviews.forEach(all_review => {
-        const res = all_review.all_rating.find(rating => parseInt(rating.id) === id);
+        const res = all_review.all_rating.find(rating => rating.user_id === id);
         if(res != null){
             result.push(res);
         }
@@ -17,43 +17,57 @@ function getAll_review_of_specific_user(all_reviews,id){
 controller.getAll = async (req, res) => {
     try {
         const all_reviews = await Movie.getAll();
-        let result = getAll_review_of_specific_user(all_reviews,parseInt(req.query.id));
+        let result = getAll_review_of_specific_user(all_reviews,req.query.user_id);
         res.send(result);
     }
     catch(err) {
-        logger.error('Error in getting cars- ' + err);
+        logger.error('Error in getting review- ' + err);
         res.send('Got error in getAll');
     }
 }
 
 controller.addReview = async (req, res) => {
-    // const test = await Movie.didUserReviewed(req.query.movieID, req.query.userID)
-    const test = await Movie.findOne({movieID:req.query.movieID}).exec()
-    console.log(req.query.movieID);
-    console.log(req.query.userID);
-    res.send(test);
-    // try {
-    //     const savedCar = await Car.addCar(carToAdd);
-    //     logger.info('Adding car...');
-    //     res.send('added: ' + savedCar);
-    // }
-    // catch(err) {
-    //     logger.error('Error in getting cars- ' + err);
-    //     res.send('Got error in getAll');
-    // }
+    console.log(req.body);
+    const existedMovie = await Movie.findOne({movie_id:req.body.movie_id}).exec()
+    if(existedMovie != null && existedMovie != {}){
+        
+        const isExistedUser = existedMovie.all_rating.some(review => review.user_id == req.query.user_id)
+        if(isExistedUser){
+            res.send({
+                isExisted: 1,
+                successful: 0
+            });
+        }else{
+            logger.info('Adding review...');
+            const result = await Movie.addReview(req.body.movie_id, {
+                user_id: req.body.user_id,
+                movie_id: req.body.movie_id,
+                rating: req.body.rating,
+                comment: req.body.comment
+              },)
+            res.send({
+                isExisted: 1,
+                successful: 0,
+                result:result
+            });
+        }
+    }else{
+        const newMovie = Movie({
+            movie_id:req.body.movie_id,
+            all_rating: [
+                {
+                    user_id: req.body.user_id,
+                    movie_id: req.body.movie_id,
+                    rating: req.body.rating,
+                    comment: req.body.comment
+                }
+            ]
+        });
+        logger.info('Adding new movie with review...');
+        const savedMovie = await Movie.addMovie(newMovie);
+        res.send('added: ' + savedMovie)
+    }
 }
 
-controller.deleteCar = async (req, res) => {
-    let carName = req.body.name;
-    try{
-        const removedCar = await Car.removeCar(carName);
-        logger.info('Deleted Car- ' + removedCar);
-        res.send('Car successfully deleted');
-    }
-    catch(err) {
-        logger.error('Failed to delete car- ' + err);
-        res.send('Delete failed..!');
-    }
-}
 
 export default controller;

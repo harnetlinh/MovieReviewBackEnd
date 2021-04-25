@@ -24,7 +24,6 @@ app.use(morgan("dev", { "stream": logger.stream }));
 
 app.use('/api', movies);
 
-//Index route
 app.get('/', (req, res) => {
     res.send('Invalid endpoint!');
 });

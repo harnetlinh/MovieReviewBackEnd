@@ -1,23 +1,29 @@
 import mongoose from 'mongoose';
 
 const subSchema = mongoose.Schema({
-    id: {
+    user_id: {
       type: String,
       required: true,
       unique: true,
       index: true
     },
+    movie_id: {
+        type: String,
+        required: true,
+    },
     rating: {
       type: Number,
+      required: true,
       default: 0,
     },
     comment: {
       type: String,
+      default: ""
     },
   });
 
 const MovieSchema = mongoose.Schema({
-    movieID: {type: String, required: true, unique: true, index: true},
+    movie_id: {type: String, required: true, unique: true, index: true},
     all_rating: [subSchema]
 }, {collection : 'movie_db'});
 
@@ -33,9 +39,9 @@ MovieModel.addMovie = (reviewToAdd) => {
 
 MovieModel.addReview = (movieID, reviewInfo) => {
     return MovieModel.update(
-        { movieID: movieID }, 
+        { movie_id: movieID }, 
         { $push: { all_rating: reviewInfo } },
-        done
+        // done
         )
 };
 
