@@ -27,7 +27,6 @@ controller.getAll = async (req, res) => {
 }
 
 controller.addReview = async (req, res) => {
-    console.log(req.body);
     const existedMovie = await Movie.findOne({movie_id:req.body.movie_id}).exec()
     if(existedMovie != null && existedMovie != {}){
         
