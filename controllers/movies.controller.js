@@ -27,11 +27,11 @@ controller.getAll = async (req, res) => {
 }
 
 controller.addReview = async (req, res) => {
-    const existedMovie = await Movie.findOne({movie_id:req.body.movie_id}).exec()
+    const existedMovie = await Movie.getSpecificMovie(req.body.movie_id);
     if(existedMovie != null && existedMovie != {}){
-        
-        const isExistedUser = existedMovie.all_rating.some(review => review.user_id == req.query.user_id)
+        const isExistedUser = existedMovie.all_rating.some(review => review.user_id == req.body.user_id)
         if(isExistedUser){
+            logger.info('Existed user_id '+req.body.user_id+' in movie id ' + req.body.movie_id);
             res.send({
                 isExisted: 1,
                 successful: 0

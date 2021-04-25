@@ -41,25 +41,11 @@ MovieModel.addReview = (movieID, reviewInfo) => {
     return MovieModel.update(
         { movie_id: movieID }, 
         { $push: { all_rating: reviewInfo } },
-        // done
         )
 };
 
-MovieModel.hasMovie = (movieID) => {
-    return MovieModel.find({
-        movieID:movieID
-    })
-}
-
-MovieModel.didUserReviewed = (movieID, userID) =>{
-    return MovieModel.find({
-        "movieID":movieID,
-        // "all_rating.id": userID
-    })
-}
-
-MovieModel.removeCar = (movieID) => {
-    return MovieModel.remove({id: movieID});
+MovieModel.getSpecificMovie = (movie_id) => {
+    return MovieModel.findOne({movie_id:movie_id}).exec();
 }
 
 export default MovieModel;
