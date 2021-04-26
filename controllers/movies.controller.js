@@ -13,6 +13,10 @@ function getAll_review_of_specific_user(all_reviews,id){
     });
     return result;
 }
+function getCurrentTime(){
+    const d = new Date();
+    return d.toISOString().slice(0,19).replace(/T/g," ");
+}
 
 controller.getAll = async (req, res) => {
     try {
@@ -67,7 +71,9 @@ controller.addReview = async (req, res) => {
                 user_id: req.body.user_id,
                 movie_id: req.body.movie_id,
                 rating: req.body.rating,
-                comment: req.body.comment
+                comment: req.body.comment,
+                movie_name: req.body.movie_name,
+                date: getCurrentTime(),
               },)
             const check = await Movie.getSpecificMovie(req.body.movie_id);
             res.send({
@@ -84,7 +90,9 @@ controller.addReview = async (req, res) => {
                     user_id: req.body.user_id,
                     movie_id: req.body.movie_id,
                     rating: req.body.rating,
-                    comment: req.body.comment
+                    comment: req.body.comment,
+                    movie_name: req.body.movie_name,
+                    date: getCurrentTime(),
                 }
             ]
         });

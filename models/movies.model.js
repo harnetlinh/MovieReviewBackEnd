@@ -20,6 +20,14 @@ const subSchema = mongoose.Schema({
       type: String,
       default: ""
     },
+    movie_name: {
+      type: String,
+      default: ""
+    },
+    date: {
+      type: String,
+      default: ""
+    },
   });
 
 const MovieSchema = mongoose.Schema({
